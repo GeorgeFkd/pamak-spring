@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.example.demo.exception.CourseNotFoundException;
+import com.example.demo.exception.ProfessorAlreadyExistsException;
+import com.example.demo.exception.ProfessorNotFoundException;
 import com.example.demo.model.Course;
 import com.example.demo.model.Professor;
 import com.example.demo.repository.CourseRepository;
@@ -27,29 +30,29 @@ public class ProfessorService {
 	
 	
 	public List<Professor> getProfessors(){
-//		Professor prof1 = new Professor(1L,"Themis","Tabouris");
-//		return List.of(prof1);
+
+		//TODO can this generate errors?
 		System.out.println("hello " + professorRepository.findAll());
 		return this.professorRepository.findAll();
 	}
 	
-	public void addNewProfessor(Professor p) {
+	public void addNewProfessor(Professor p) throws ProfessorAlreadyExistsException {
 		
 		//works
 		//business logic for when a professor should not be added 
 		Optional<Professor> profOptional = professorRepository.findProfessorByLastName(p.getLastName());
 		if(profOptional.isPresent()) {
 			System.out.println("This last name already exists in the database are you sure?");
-			throw new IllegalStateException("last name already exists in the database");
+			throw new ProfessorAlreadyExistsException("last name already exists in the database",profOptional.get());
 		}
 		professorRepository.save(p);
 		System.out.println("youhouuuuu");
 	}
 	
-	public void deleteProfessor(Long profID) {
+	public void deleteProfessor(Long profID) throws ProfessorNotFoundException {
 		boolean profExists = professorRepository.existsById(profID);
 		if(!profExists) {
-			throw new IllegalStateException("professor with id " + profID + " does not exist");
+			throw new ProfessorNotFoundException("professor with id " + profID + " does not exist");
 		}
 		
 		professorRepository.deleteById(profID);
@@ -57,7 +60,7 @@ public class ProfessorService {
 		
 		
 	}
-
+	//transactional has to do with rollbacks and commits not for saving
 	@Transactional
 	public Professor updateProfessorDetails(Long id, Professor p) throws Exception {
 //		boolean profExists = professorRepository.existsById(id);
@@ -66,25 +69,26 @@ public class ProfessorService {
 //			throw new IllegalStateException("Professor with details: " + id + " " + firstName + " " + lastName + " doesn't exist");
 //		}
 		//prosoxh to p den exei id 
-		Professor prof = professorRepository.findById(id).orElseThrow(()-> new NotFoundException());
+		Professor prof = professorRepository.findById(id).orElseThrow(()-> new ProfessorNotFoundException("Professor with id " + id +" doesn't exist"));
 		prof.setFirstName(p.getFirstName());
 		prof.setLastName(p.getLastName());
 		prof.setEmail(p.getEmail());
 		System.out.println(prof + "hello bama");
-		return prof;
-		//validation that params exist and are of certain form
-		
+		//this instead of transactional
+		//professorRepository.save(prof);
+		return prof;		
 		
 		
 	}
 
 
-	public List<Course> getHisCourses(Long profID) {
+	public List<Course> getHisCourses(Long profID) throws ProfessorNotFoundException {
 		//problem
 		if(!professorRepository.existsById(profID)) {
-			throw new IllegalStateException("Mf doesn't exist");
+			throw new ProfessorNotFoundException("Professor with ID" +profID + " doesn't exist");
 		}
 
+		//TODO doesn't this generate an error? or just empty list
 		List<Course> courses = courseRepo.findCoursesByProfessorsId(profID);
 		
 		//System.out.println(courses.get(0).getName());
@@ -94,33 +98,28 @@ public class ProfessorService {
 
 	//works(it needed transactional to operate as the addCourse operation wasn't saving anything
 	@Transactional
-	public void addCourseToProfessor(Long profID, Long courseID) {
-		Optional<Course> c = courseRepo.findById(courseID);
-		Optional<Professor> p = professorRepository.findById(profID);
-		if(!c.isPresent()) {
-			System.out.println("this course doesnt exist. id: " + courseID);
-		}else {
-			if(!p.isPresent()) {
-				System.out.println("Professor doesnt exist");
-				
-			}else {
-				p.get().addCourse(c.get());
-				System.out.println("course was added on his list");
-				System.out.println(p.get().getCourses());
-			}
-		}
-		
+	public void addCourseToProfessor(Long profID, Long courseID) throws Exception {  	
+	    Optional<Course> c = courseRepo.findById(courseID);
+	    if(!c.isPresent()) {
+		throw new CourseNotFoundException("Course with ID " + courseID + " doesn't exist");
+	    }
+	
+	    Optional<Professor> p = professorRepository.findById(profID);
+	    if(!p.isPresent()) {
+		throw new ProfessorNotFoundException("Professor with ID " + profID + " doesn't exist");
+	    }
+	
+	    p.get().addCourse(c.get());
+	    System.out.println("course was added on his list");
+	    System.out.println(p.get().getCourses());	
 	}
 
 
 	public Professor getProfessorByID(Long profID) throws NotFoundException {
-		// TODO Auto-generated method stub
-		Optional<Professor> prof = professorRepository.findById(profID);
-		prof.orElseThrow(()-> new NotFoundException());
-		
-		
-		return prof.get();
-		
+
+	    	Optional<Professor> prof = professorRepository.findById(profID);
+		prof.orElseThrow(()-> new ProfessorNotFoundException("Professor with ID " + profID + " doesn't exist"));
+		return prof.get();	
 	}
 	
 

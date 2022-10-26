@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.exception.CourseAlreadyExistsException;
+import com.example.demo.exception.CourseNotFoundException;
 import com.example.demo.model.Course;
 import com.example.demo.repository.CourseRepository;
 import com.example.demo.repository.ProfessorRepository;
@@ -28,12 +30,12 @@ public class CourseService {
 		return courseRepo.findAll();
 	}
 	
-	public void createCourse(Course c) {
+	public void createCourse(Course c) throws CourseAlreadyExistsException {
 		//check to see if it exists
 		List<Course> course = courseRepo.findCourseByName(c.getName());
 		if(!course.isEmpty()) {
 			System.out.println("course with that name already exists");
-			throw new IllegalStateException("Cant create a course with the same name");
+			throw new CourseAlreadyExistsException("Cant create a course with the same name",course.get(0));
 		}else {
 			courseRepo.save(c);
 		}
@@ -46,16 +48,10 @@ public class CourseService {
 	
 	public Course deleteCourseById(Long courseID) throws Exception {
 		//check if it is in database
-		boolean exists = courseRepo.existsById(courseID);
-		System.out.println("hello outside");
-		if(exists) {
-			Course c = courseRepo.findById(courseID).orElseThrow(()-> new NotFoundException());
-			courseRepo.deleteById(courseID);
-			return c;
-		}else {
-			System.out.println("hello inside");
-			throw new NotFoundException();
-		}
+		
+		Course c = courseRepo.findById(courseID).orElseThrow(()-> new CourseNotFoundException("Course with id " + courseID + "doesn't exist"));
+		courseRepo.deleteById(courseID);
+		return c;
 		
 	}
 	@Transactional
@@ -70,7 +66,7 @@ public class CourseService {
 			return course;
 			//course.setProfessors(c.getProfessors());
 		}else {
-			throw new NotFoundException();
+			throw new CourseNotFoundException("Course with ID " + courseID + " doesn't exist");
 		}
 	}
 	

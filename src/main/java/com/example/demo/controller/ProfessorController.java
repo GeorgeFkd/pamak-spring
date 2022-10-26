@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.exception.ProfessorAlreadyExistsException;
+import com.example.demo.exception.ProfessorNotFoundException;
 import com.example.demo.model.Course;
 import com.example.demo.model.Professor;
 import com.example.demo.service.ProfessorService;
@@ -70,14 +72,15 @@ public class ProfessorController {
 	//validates the email semi properly but the first name no
 	//http://localhost:8080/api/v1/professors {"firstName":"giwrgos", "lastName":"refanidhs","email:"refaG@gmail.com"}
 	@PostMapping()
-	public ResponseEntity<String> registerNewProfessor(@Valid @RequestBody @ApiParam(name="Professor", value="Professor JSON without courses and id",example="p") Professor p) {
+	public ResponseEntity<String> registerNewProfessor(@Valid @RequestBody @ApiParam(name="Professor", value="Professor JSON without courses and id",example="p") Professor p) throws ProfessorAlreadyExistsException {
 		System.out.println("all good");
 		professorService.addNewProfessor(p);
-		return new ResponseEntity<>(p + "\n professor added to database",HttpStatus.CREATED);
+		return new ResponseEntity<>(p + "\n professor added "
+			+ "to database",HttpStatus.CREATED);
 	}
 	//http://localhost:8080/api/v1/professors/1 
 	@DeleteMapping(path="/{profId}")
-	public String deleteProfessor(@PathVariable("profId") Long profID) {
+	public String deleteProfessor(@PathVariable("profId") Long profID) throws ProfessorNotFoundException {
 		professorService.deleteProfessor(profID);
 		return "Professor was deleted";
 		
@@ -86,7 +89,7 @@ public class ProfessorController {
 	//not yet
 	//http://localhost:8080/api/v1/professors/1/courses/1
 	@PostMapping(path="/{profId}/courses/{courseId}")
-	public String addCourseToProfessor(@PathVariable("profId") Long profID,@PathVariable("courseId") Long courseID) {
+	public String addCourseToProfessor(@PathVariable("profId") Long profID,@PathVariable("courseId") Long courseID) throws Exception {
 		professorService.addCourseToProfessor(profID,courseID);
 		return "done";
 		
@@ -94,7 +97,7 @@ public class ProfessorController {
 	//not yet
 	//http://localhost:8080/api/v1/professors/1/courses
 	@GetMapping(path="/{profId}/courses")
-	public List<Course> getCoursesOfProfessor(@PathVariable("profId") Long profID){
+	public List<Course> getCoursesOfProfessor(@PathVariable("profId") Long profID) throws Exception{
 		List<Course> hisCourses = professorService.getHisCourses(profID);
 		return hisCourses;
 	}

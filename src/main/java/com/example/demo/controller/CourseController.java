@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.exception.CourseAlreadyExistsException;
 import com.example.demo.model.Course;
 import com.example.demo.service.CourseService;
 
@@ -32,7 +33,7 @@ public class CourseController {
 	}
 	//works and tested
 	@PostMapping
-	public ResponseEntity<String> createNewCourse(@Valid @RequestBody Course c) {
+	public ResponseEntity<String> createNewCourse(@Valid @RequestBody Course c) throws CourseAlreadyExistsException {
 		courseServ.createCourse(c);
 		return new ResponseEntity<>("Course created successfully",HttpStatus.CREATED);
 	}

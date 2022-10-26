@@ -12,11 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ControllerExceptionHandler {
 
 	
-	@ExceptionHandler(value=NotFoundException.class)
-	@ResponseStatus(value = HttpStatus.NOT_FOUND)
-	public String professorWasNotFoundException(NotFoundException e){
-		return "Professor was not found hello";
-	} 
+	
 	
 	
 	@ExceptionHandler(value=IllegalArgumentException.class)
