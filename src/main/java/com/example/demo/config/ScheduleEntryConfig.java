@@ -1,12 +1,10 @@
 package com.example.demo.config;
 
-import java.util.List;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.example.demo.repository.ScheduleEntryRepository;
+import com.example.demo.Schedule.ScheduleEntryRepository;
 
 @Configuration
 public class ScheduleEntryConfig {

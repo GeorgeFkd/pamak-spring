@@ -1,12 +1,10 @@
 package com.example.demo.config;
 
-import java.util.List;
-
+import com.example.demo.professor.ProfessorRepository;
+import com.example.demo.professor.ProfessorService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.example.demo.repository.ProfessorRepository;
 
 @Configuration
 public class ProfessorConfig {

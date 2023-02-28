@@ -1,25 +1,24 @@
 package com.example.demo;
 
-import java.util.List;
-
+import com.example.demo.professor.ProfessorService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.model.Course;
-import com.example.demo.model.Professor;
-import com.example.demo.model.ScheduleEntry;
-import com.example.demo.repository.CourseRepository;
-import com.example.demo.repository.ProfessorRepository;
-import com.example.demo.repository.ScheduleEntryRepository;
+import com.example.demo.Course.CourseRepository;
+import com.example.demo.Schedule.ScheduleEntryRepository;
+import com.example.demo.professor.ProfessorRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @SpringBootApplication
 @RestController
+@EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class})
 public class PamakApplication implements CommandLineRunner {
 
 	private final CourseRepository courseRepo;

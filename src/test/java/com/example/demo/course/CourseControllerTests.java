@@ -23,17 +23,12 @@ import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.example.demo.controller.CourseController;
-import com.example.demo.controller.ProfessorController;
-import com.example.demo.model.Course;
-import com.example.demo.repository.CourseRepository;
-import com.example.demo.repository.ProfessorRepository;
-import com.example.demo.service.CourseService;
-import com.example.demo.service.ProfessorService;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.example.demo.Course.CourseController;
+import com.example.demo.Course.Course;
+import com.example.demo.Course.CourseRepository;
+import com.example.demo.Course.CourseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @AutoConfigureMockMvc
